@@ -1,7 +1,9 @@
 import { useState } from 'react'
+import { toast } from 'react-hot-toast'
 
 function App() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [uploading, setUploading] = useState(false)
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -10,10 +12,29 @@ function App() {
     }
   }
 
-  const handleUpload = () => {
-    if (selectedFile) {
-      console.log('Uploading file:', selectedFile.name)
+  const handleUpload = async () => {
+    if (!selectedFile) return
+    setUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', selectedFile)
+
+      const response = await fetch('http://localhost:8000/upload', {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!response.ok) {
+        throw new Error(`Upload failed: ${response.status}`)
+      }
+
+      const result = await response.json()
+      toast.success(`Upload successful! Transcription: ${result.transcription}`)
       setSelectedFile(null)
+    } catch (err: any) {
+      toast.error(err.message || 'Upload failed')
+    } finally {
+      setUploading(false)
     }
   }
 
@@ -45,9 +66,9 @@ function App() {
           <button
             className="upload-button"
             onClick={handleUpload}
-            disabled={!selectedFile}
+            disabled={!selectedFile || uploading}
           >
-            Upload
+            {uploading ? 'Uploading...' : 'Upload'}
           </button>
         </div>
       </main>
