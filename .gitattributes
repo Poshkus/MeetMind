@@ -1,0 +1,19 @@
+# Normalize text to LF in repo (important for running in Linux containers)
+* text=auto eol=lf
+
+# Explicitly keep these as text with LF
+*.py   text eol=lf
+*.mako text eol=lf
+*.ini  text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+*.md   text eol=lf
+*.sql  text eol=lf
+
+# Binary files
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.pdf  binary
+*.docx binary
